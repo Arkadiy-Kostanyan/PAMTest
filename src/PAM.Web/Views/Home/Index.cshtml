@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+<script>
+    $(document).ready(function(){
+        $.get("/api/products", function (response) {
+           
+            $("#Result").text(response.products[0].productNumber); // server response
+        });
+    });
+</script>
+<div class="row">
+    <div class="col-md-1">
+        ProductNumber: <span id="Result"></span>
+    </div>
+</div>
