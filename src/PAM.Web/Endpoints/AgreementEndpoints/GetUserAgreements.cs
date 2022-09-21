@@ -8,6 +8,7 @@ using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext
 using PAM.Core.Interfaces;
 using PAM.Web.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace PAM.Web.Endpoints.AgreementEndpoints;
 
@@ -37,7 +38,7 @@ public class GetUserAgreements : EndpointBaseAsync
 
     var response = new AgreementResponse();
     response.Agreements = (await _repository.ListAsync(new AgreementWithProductsAndGroupsSpec(_currentUserService.UserId)))
-        .Select(agreement => new AgreementRecord(agreement.Id, agreement.Product.ProductGroup.GroupCode, 
+        .Select(agreement => new AgreementRecord(agreement.Id, _currentUserService.UserName, agreement.Product.ProductGroup.GroupCode, 
         agreement.Product.ProductNumber, agreement.EffectiveDate, agreement.ExpirationDate, 
         agreement.ProductPrice, agreement.NewPrice, agreement.Active))
         .ToList();
@@ -51,7 +52,7 @@ public class AgreementResponse
   public List<AgreementRecord> Agreements { get; set; } = new();
 }
 
-public record AgreementRecord(int Id, string GroupCode, string ProductNumber, DateTime EffectiveDate, DateTime? ExpirationDate, 
+public record AgreementRecord(int Id, string UserName, string GroupCode, string ProductNumber, DateTime EffectiveDate, DateTime? ExpirationDate, 
   decimal ProductPrice, decimal NewPrice, bool Active);
 
 

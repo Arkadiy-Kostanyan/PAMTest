@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAM.Core.AgreementAggregate;
 using PAM.Core.AgreementAggregate.Specifications;
+using PAM.Core.Interfaces;
 using PAM.SharedKernel.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
@@ -16,11 +17,13 @@ public class UpdateAgreement: EndpointBaseAsync
 {
   private readonly IRepository<Agreement> _repository;
   private readonly IRepository<Product> _prepository;
+  private readonly ICurrentUserService _currentUserService;
 
-  public UpdateAgreement(IRepository<Agreement> repository, IRepository<Product> prepository)
+  public UpdateAgreement(IRepository<Agreement> repository, IRepository<Product> prepository, ICurrentUserService currentUserService)
   {
     _repository = repository;
     _prepository = prepository;
+    _currentUserService = currentUserService;
   }
 
   [Authorize]
@@ -62,7 +65,7 @@ public class UpdateAgreement: EndpointBaseAsync
     await _repository.UpdateAsync(existingAgreement); 
 
     var response = new UpdateAgreementResponse(
-        agreement: new AgreementRecord(existingAgreement.Id, existingAgreement.Product.ProductGroup.GroupCode,
+        agreement: new AgreementRecord(existingAgreement.Id, _currentUserService.UserName, existingAgreement.Product.ProductGroup.GroupCode,
         existingAgreement.Product.ProductNumber, existingAgreement.EffectiveDate, existingAgreement.ExpirationDate,
         existingAgreement.ProductPrice, existingAgreement.NewPrice, existingAgreement.Active)
     );
