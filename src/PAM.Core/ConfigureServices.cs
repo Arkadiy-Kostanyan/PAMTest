@@ -10,7 +10,7 @@ public static class ConfigureServices
   {
 
     services.AddMediatR(Assembly.GetExecutingAssembly());
-    //services.AddScoped(typeof(IToDoItemSearchService), typeof(ToDoItemSearchService));
+    
     return services;
   }
 }
