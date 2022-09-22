@@ -18,7 +18,7 @@ public class GetActiveProducts : EndpointBaseAsync
     _repository = repository;
   }
 
-  [HttpGet("/api/products")]
+  [HttpGet("/api/v{version:apiVersion}/products")]
   [SwaggerOperation(
       Summary = "Gets a list of all active Products",
       Description = "Gets a list of all active Products",

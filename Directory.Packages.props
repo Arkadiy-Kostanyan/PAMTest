@@ -33,6 +33,9 @@
     </PackageVersion>
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Versioning">
+      <Version>5.0.0</Version>
+    </PackageVersion>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />

@@ -67,7 +67,7 @@ public class CreateAgreement : EndpointBaseAsync
 
  public class CreateAgreementRequest
 {
-  public const string Route = "/agreements";
+  public const string Route = "/api/v{version:apiVersion}/agreements";
 
   [Required]
   public int ProductId { get; set; }

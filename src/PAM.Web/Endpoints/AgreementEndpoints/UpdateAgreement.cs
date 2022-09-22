@@ -51,6 +51,7 @@ public class UpdateAgreement: EndpointBaseAsync
       return NotFound();
     }
 
+    existingAgreement.UserId = _currentUserService.UserId;
     existingAgreement.SetProduct(product);
     existingAgreement.EffectiveDate = request.EffectiveDate;
     existingAgreement.ExpirationDate = request.ExpirationDate;
@@ -64,13 +65,14 @@ public class UpdateAgreement: EndpointBaseAsync
         existingAgreement.Product.ProductNumber, existingAgreement.EffectiveDate, existingAgreement.ExpirationDate,
         existingAgreement.ProductPrice, existingAgreement.NewPrice, existingAgreement.Active, existingAgreement.Product.Description, existingAgreement.Product.ProductGroup.Description)
     );
+
     return Ok(response);
   }
 }
 
 public class UpdateAgreementRequest
 {
-  public const string Route = "/agreements";
+  public const string Route = "/api/v{version:apiVersion}/agreements";
   
   [Required]
   public int Id { get; set; }

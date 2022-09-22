@@ -141,7 +141,7 @@
                 },
                 processData: false,
                 type: 'DELETE',
-                url: '/agreements/' + id
+                url: '/api/v1/agreements/' + id
             });
         }
     }
@@ -203,7 +203,7 @@
                 },
                 processData: false,
                 type: 'POST',
-                url: '/agreements'
+                url: '/api/v1/agreements'
             });
         }
         else {
@@ -224,7 +224,7 @@
                 },
                 processData: false,
                 type: 'PUT',
-                url: '/agreements'
+                url: '/api/v1/agreements'
             });
         }
     }
@@ -274,7 +274,7 @@
 
         table = $('#tblAgreements').DataTable({
             ajax: {
-                url: '/api/agreements',
+                url: '/api/v1/agreements',
                 dataSrc: 'agreements'
             },
             columns: [
@@ -322,7 +322,7 @@
         dropdown.prop('selectedIndex', 0);
 
         // Populate select with list of products
-        $.getJSON("/api/products", function (data) {
+        $.getJSON("/api/v1/products", function (data) {
 
             //alert(Object.getOwnPropertyNames(products));
             $.each(data.products, function () {

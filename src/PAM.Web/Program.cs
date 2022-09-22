@@ -12,6 +12,7 @@ using System.Configuration;
 using PAM.Core.Interfaces;
 using PAM.Web.Services;
 using PAM.Web.Middleware;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,9 +36,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 
+builder.Services.AddApiVersioning(o =>
+{
+  o.AssumeDefaultVersionWhenUnspecified = true;
+  o.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+  o.ReportApiVersions = true;
+  o.ApiVersionReader = ApiVersionReader.Combine(
+      new QueryStringApiVersionReader("api-version"),
+      new HeaderApiVersionReader("X-Version"),
+      new MediaTypeApiVersionReader("ver"));
+
+});
+
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PAM API", Version = "v1" });
     c.EnableAnnotations();
 });
 
@@ -75,7 +89,7 @@ app.UseCookiePolicy();
 app.UseSwagger();
 
 // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PAM API V1"));
 
 app.UseAuthentication();
 app.UseAuthorization();

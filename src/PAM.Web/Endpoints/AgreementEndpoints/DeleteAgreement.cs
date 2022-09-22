@@ -41,7 +41,7 @@ public class DeleteAgreement : EndpointBaseAsync
 
 public class DeleteAgreementRequest
 {
-  public const string Route = "/agreements/{id:int}";
+  public const string Route = "/api/v{version:apiVersion}/agreements/{id:int}";
   public static string BuildRoute(int id) => Route.Replace("{id:int}", id.ToString());
 
   public int Id { get; set; }
