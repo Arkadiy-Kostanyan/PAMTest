@@ -19,9 +19,10 @@ body {
 
 input.date {
     position: relative;
-    width: 150px;
-    height: 20px;
+    width: 140px;
+    height: 38px;
     color: white;
+    margin-top: 10px;
 }
 
 input.date:before {

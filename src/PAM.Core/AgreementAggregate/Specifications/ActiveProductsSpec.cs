@@ -12,6 +12,7 @@ public class ActiveProductsSpec: Specification<Product>
   public ActiveProductsSpec()
 {
   Query
-      .Where(product => product.Active == true);
+      .Where(product => product.Active == true)
+      .Include(product => product.ProductGroup);
 }
 }

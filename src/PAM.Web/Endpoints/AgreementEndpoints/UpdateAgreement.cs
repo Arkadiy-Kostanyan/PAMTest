@@ -37,13 +37,8 @@ public class UpdateAgreement: EndpointBaseAsync
   public override async Task<ActionResult<UpdateAgreementResponse>> HandleAsync(UpdateAgreementRequest request,
       CancellationToken cancellationToken)
   {
-    if (request.ProductId == null)
-    {
-      return BadRequest();
-    }
-
     //check if Product with passed Id exists
-    var product = await _prepository.GetByIdAsync(request.ProductId);
+    var product = await _prepository.GetBySpecAsync(new ProductByIdWithGroupSpec(request.ProductId));
     if (product is null)
     {
       return BadRequest();
@@ -57,8 +52,8 @@ public class UpdateAgreement: EndpointBaseAsync
     }
 
     existingAgreement.SetProduct(product);
-    existingAgreement.EffectiveDate = request.EffectiveDate.Value;
-    existingAgreement.ExpirationDate = request.ExpirationDate.Value;
+    existingAgreement.EffectiveDate = request.EffectiveDate;
+    existingAgreement.ExpirationDate = request.ExpirationDate;
     existingAgreement.NewPrice = request.NewPrice;
     existingAgreement.Active = request.Active;
     
@@ -75,16 +70,16 @@ public class UpdateAgreement: EndpointBaseAsync
 
 public class UpdateAgreementRequest
 {
-  public const string Route = "/Agreements";
+  public const string Route = "/agreements";
   
   [Required]
   public int Id { get; set; }
   [Required]
-  public int? ProductId { get; set; }
+  public int ProductId { get; set; }
   [Required]
-  public DateTime? EffectiveDate { get; set; }
+  public DateTime EffectiveDate { get; set; }
   [Required]
-  public DateTime? ExpirationDate { get; set; }
+  public DateTime ExpirationDate { get; set; }
   [Required]
   public decimal NewPrice { get; set; }
   [Required]

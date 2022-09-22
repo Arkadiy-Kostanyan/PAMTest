@@ -7,7 +7,9 @@
 }
 
 
-       ProductNumber: <span id="Result"></span>
+<div class="alert alert-success" id="success-alert"></div>
+
+<div class="alert alert-danger" id="danger-alert"></div>
 
 <div class="modal" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -20,16 +22,12 @@
             </div>
             <div class="modal-body">
                 <form id="dataForm" src="#">
-                    <input id="txtAgreementId" type="text" style="display:none;" placeholder="Agreement Id" />
+                    <input id="txtAgreementId" type="text" style="display:none;" />
                     <div class="form-group row">
                         <label for="selProductId" class="col-sm-2 col-form-label">Product</label>
                         <div class="col-sm-4">
                             <select class="form-control" id="selProductId">
                                 <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
                             </select>
                         </div>
                     </div>
@@ -51,7 +49,7 @@
                             <input type="number" class="form-control" id="txtNewPrice" pattern="\d\.\d{4}" placeholder="####.####" />
                         </div>
                     </div>
-                    <div class="form-check row">
+                    <div class="form-group row">
                         <div class="col-sm-2">Active</div>
                         <div class="col-sm-4">
                             <div class="form-check">
@@ -69,9 +67,10 @@
     </div>
 </div>
 
-<button id="btnAddNew" class="btn btn-primary" style="margin-right:5px;" onclick="ShowModal();">Add New Agreement</button>
+<button id="btnAddNew" class="btn btn-primary" style="margin-right:5px;" onclick="AddNew();">Add New Agreement</button>
 
-<br /></br/>
+<br />
+<br />
 
 <table id="tblAgreements" class="table table-striped">
     <thead>
@@ -92,27 +91,143 @@
 
 <script type="text/javascript">
 
+    var table = new Object();
+
+    function GetLocalDateString(strDate){
+        var dt = new Date();
+        var date = new Date(strDate);
+        date.setHours(dt.getHours());
+
+        return date.toISOString().split('T')[0];
+    }
+
     function Edit(oAgreement) {
 
+        $('#txtAgreementId').val(oAgreement.id);
+        $('#selProductId option').filter(function () {
+            return $(this).text() == oAgreement.productNumber;
+        }).prop('selected', true);
+
+        $('#txtEffectiveDate').val(GetLocalDateString(oAgreement.effectiveDate));
+        $('#txtExpirationDate').val(GetLocalDateString(oAgreement.expirationDate));
+        $("input.date").trigger("change");
+        $('#txtNewPrice').val(oAgreement.newPrice);
+        $('#ckbActive').prop('checked', oAgreement.active);
+        ShowModal("Edit Agreement");
     }
 
     function Delete(oAgreement) {
+        if (window.confirm("Do you really want to delete Agreement?")) {
+            var id = oAgreement.id;
 
+            $.ajax({
+                contentType: 'application/json',
+                success: function (data) {
+
+                    ShowAlert($("#success-alert"), "Agreement successfully deleted.");
+                    table.ajax.reload();
+                },
+                error: function (xhr, status, error) {
+                    //alert(xhr.responseText);
+                    ShowAlert($("#danger-alert"), "Error during deleting of Agreement!");
+                },
+                processData: false,
+                type: 'DELETE',
+                url: '/agreements/' + id
+            });
+        }
     }
 
-    function ShowModal() {
+    function ShowAlert(obj, message)
+    {   
+        obj.text(message);
+        obj.fadeTo(2000, 500).slideUp(500, function () {
+            obj.slideUp(500);
+        });
+    }
+
+    function AddNew()
+    {
+        $('#txtAgreementId').val('0');
+        $('#selProductId').prop('selectedIndex', 0);
+        var date = new Date();
+        $('#txtEffectiveDate').val(date.toISOString().split('T')[0]);
+        $('#txtExpirationDate').val(date.toISOString().split('T')[0]);
+        $("input.date").trigger("change");
+        $('#txtNewPrice').val("");
+        $('#ckbActive').prop('checked', false);
+        ShowModal("Add Agreement");
+    }
+
+    function ShowModal(message) {
+
+        $('#addModal').find('.modal-title').text(message);
         $('#addModal').modal('show');
     }
 
     function Save() {
+
         $('#addModal').modal('hide');
+        var obj = new Object();
+        obj.productId = $('#selProductId').find(":selected").val();
+        obj.effectiveDate = $('#txtEffectiveDate').val();
+        obj.expirationDate = $('#txtExpirationDate').val();
+        obj.newPrice = $('#txtNewPrice').val();
+        obj.active = $('#ckbActive').prop('checked');
+
+        //alert(JSON.stringify(obj));
+        id = $('#txtAgreementId').val();
+        if (id == '0'){
+            // send create agreeement request
+            $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify(obj),
+                dataType: 'json',
+                success: function (data) {
+                
+                    ShowAlert($("#success-alert"), "Agreement successfully saved.");
+                    table.ajax.reload();
+                },
+                error: function (xhr, status, error) {
+                    //alert(xhr.responseText);
+                    ShowAlert($("#danger-alert"), "Error during saving Agreement!");
+                },
+                processData: false,
+                type: 'POST',
+                url: '/agreements'
+            });
+        }
+        else {
+            // send update agreeement request
+            obj.id = $('#txtAgreementId').val();
+            $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify(obj),
+                dataType: 'json',
+                success: function (data) {
+                
+                    ShowAlert($("#success-alert"), "Agreement successfully saved.");
+                    table.ajax.reload();
+                },
+                error: function (xhr, status, error) {
+                    //alert(xhr.responseText);
+                    ShowAlert($("#danger-alert"), "Error during saving Agreement!");
+                },
+                processData: false,
+                type: 'PUT',
+                url: '/agreements'
+            });
+        }
     }
 
     $(document).ready(function () {
-   
+
+        $("#success-alert").hide();
+        $("#danger-alert").hide();
+       
         $('#addModal').modal({
-           focus: true,
-           show: false
+            focus: true,
+            show: false
         });
 
         $("input.date").on("change", function () {
@@ -123,7 +238,7 @@
             )
         }).trigger("change");
 
-        $('#tblAgreements').DataTable({
+        table = $('#tblAgreements').DataTable({
             ajax: {
                 url: '/api/agreements',
                 dataSrc: 'agreements'
@@ -146,10 +261,21 @@
             ]
         });
 
-        
-        $.get("/api/products", function (response) {
+        let dropdown = $('#selProductId');
+        dropdown.empty();
 
-            $("#Result").text(response.products[0].productNumber); // server response
+        dropdown.append('<option selected="true" disabled>Choose Product</option>');
+        dropdown.prop('selectedIndex', 0);
+
+        // Populate select with list of products
+        $.getJSON("/api/products", function (data) {
+
+            //alert(Object.getOwnPropertyNames(products));
+            $.each(data.products, function () {
+                dropdown.append("<option value='" + this.id + "'>" + this.productNumber + "</option>");
+            });
         });
+
+
     });
 </script>

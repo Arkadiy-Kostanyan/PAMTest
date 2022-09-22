@@ -8,41 +8,41 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace PAM.Web.Endpoints.AgreementEndpoints;
 
-public class DeleteAgreement: EndpointBaseAsync
+public class DeleteAgreement : EndpointBaseAsync
         .WithRequest<DeleteAgreementRequest>
         .WithoutResult
-    {
-        private readonly IRepository<Agreement> _repository;
-
-public DeleteAgreement(IRepository<Agreement> repository)
 {
-  _repository = repository;
-}
+  private readonly IRepository<Agreement> _repository;
 
-[Authorize]
-[HttpDelete(DeleteAgreementRequest.Route)]
-[SwaggerOperation(
-    Summary = "Deletes an Agreement",
-    Description = "Deletes an Agreement",
-    OperationId = "Agreements.Delete",
-    Tags = new[] { "AgreementEndpoints" })
-]
-public override async Task<ActionResult> HandleAsync([FromRoute] DeleteAgreementRequest request,
-    CancellationToken cancellationToken)
-{
-  var aggregateToDelete = await _repository.GetByIdAsync(request.AgreementId); 
-  if (aggregateToDelete == null) return NotFound();
+  public DeleteAgreement(IRepository<Agreement> repository)
+  {
+    _repository = repository;
+  }
 
-  await _repository.DeleteAsync(aggregateToDelete);
+  [Authorize]
+  [HttpDelete(DeleteAgreementRequest.Route)]
+  [SwaggerOperation(
+      Summary = "Deletes an Agreement",
+      Description = "Deletes an Agreement",
+      OperationId = "Agreements.Delete",
+      Tags = new[] { "AgreementEndpoints" })
+  ]
+  public override async Task<ActionResult> HandleAsync([FromRoute] DeleteAgreementRequest request,
+      CancellationToken cancellationToken)
+  {
+    var aggregateToDelete = await _repository.GetByIdAsync(request.Id);
+    if (aggregateToDelete == null) return NotFound();
 
-  return NoContent();
-}
+    await _repository.DeleteAsync(aggregateToDelete);
+
+    return NoContent();
+  }
 }
 
 public class DeleteAgreementRequest
 {
-  public const string Route = "/Agreements/{AgreementId:int}";
-  public static string BuildRoute(int agreementId) => Route.Replace("{AgreementId:int}", agreementId.ToString());
+  public const string Route = "/agreements/{id:int}";
+  public static string BuildRoute(int id) => Route.Replace("{id:int}", id.ToString());
 
-  public int AgreementId { get; set; }
+  public int Id { get; set; }
 }
