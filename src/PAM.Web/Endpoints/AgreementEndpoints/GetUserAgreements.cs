@@ -40,7 +40,7 @@ public class GetUserAgreements : EndpointBaseAsync
     response.Agreements = (await _repository.ListAsync(new AgreementWithProductsAndGroupsSpec(_currentUserService.UserId)))
         .Select(agreement => new AgreementRecord(agreement.Id, _currentUserService.UserName, agreement.Product.ProductGroup.GroupCode, 
         agreement.Product.ProductNumber, agreement.EffectiveDate, agreement.ExpirationDate, 
-        agreement.ProductPrice, agreement.NewPrice, agreement.Active))
+        agreement.ProductPrice, agreement.NewPrice, agreement.Active, agreement.Product.Description, agreement.Product.ProductGroup.Description))
         .ToList();
 
     return Ok(response);
@@ -53,6 +53,6 @@ public class AgreementResponse
 }
 
 public record AgreementRecord(int Id, string UserName, string GroupCode, string ProductNumber, DateTime EffectiveDate, DateTime? ExpirationDate, 
-  decimal ProductPrice, decimal NewPrice, bool Active);
+  decimal ProductPrice, decimal NewPrice, bool Active, string ProductDescription, string GroupDescription);
 
 

@@ -24,7 +24,7 @@ namespace PAM.Web
       g1.Description = "G1 Description";
       var g2 = new ProductGroup();
       g2.GroupCode = "G2";
-      g2.Description = "G1 Description";
+      g2.Description = "G2 Description";
 
       dbContext.ProductGroups.Add(g1);
       dbContext.ProductGroups.Add(g2);

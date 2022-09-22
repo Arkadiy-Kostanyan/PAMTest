@@ -62,7 +62,7 @@ public class UpdateAgreement: EndpointBaseAsync
     var response = new UpdateAgreementResponse(
         agreement: new AgreementRecord(existingAgreement.Id, _currentUserService.UserName, existingAgreement.Product.ProductGroup.GroupCode,
         existingAgreement.Product.ProductNumber, existingAgreement.EffectiveDate, existingAgreement.ExpirationDate,
-        existingAgreement.ProductPrice, existingAgreement.NewPrice, existingAgreement.Active)
+        existingAgreement.ProductPrice, existingAgreement.NewPrice, existingAgreement.Active, existingAgreement.Product.Description, existingAgreement.Product.ProductGroup.Description)
     );
     return Ok(response);
   }

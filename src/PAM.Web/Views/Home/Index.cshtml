@@ -7,9 +7,9 @@
 }
 
 
-<div class="alert alert-success" id="success-alert"></div>
+<div class="alert alert-success" id="success-alert" style="display:none;"></div>
 
-<div class="alert alert-danger" id="danger-alert"></div>
+<div class="alert alert-danger" id="danger-alert" style="display:none;"></div>
 
 <div class="modal" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -29,6 +29,7 @@
                             <select class="form-control" id="selProductId">
                                 <option>1</option>
                             </select>
+                            <span id="spanProductRequired" style="display:none;color:red;position: absolute;margin: -30px 0px 0px 145px;">Product is required.</span>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -46,7 +47,8 @@
                     <div class="form-group row">
                         <label for="txtNewPrice" class="col-sm-2 col-form-label">New Price</label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="txtNewPrice" pattern="\d\.\d{4}" placeholder="####.####" />
+                            <input type="number" class="form-control" style="display: inline;" id="txtNewPrice" pattern="\d\.\d{4}" placeholder="####.####" />
+                            <span id="spanPriceRequired" style="display:none;color:red;position: absolute;margin: 5px 0 0 3px;">New Price is required.</span>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -93,12 +95,18 @@
 
     var table = new Object();
 
-    function GetLocalDateString(strDate){
+    function GetLocalDateString(strDate) {
         var dt = new Date();
         var date = new Date(strDate);
         date.setHours(dt.getHours());
 
         return date.toISOString().split('T')[0];
+    }
+
+    function FormatDate(strDate)
+    {
+        const D = new Date(strDate);                 
+        return (D.getMonth() + 1) + "/" + D.getDate() + "/" + D.getFullYear();
     }
 
     function Edit(oAgreement) {
@@ -138,16 +146,14 @@
         }
     }
 
-    function ShowAlert(obj, message)
-    {   
+    function ShowAlert(obj, message) {
         obj.text(message);
         obj.fadeTo(2000, 500).slideUp(500, function () {
             obj.slideUp(500);
         });
     }
 
-    function AddNew()
-    {
+    function AddNew() {
         $('#txtAgreementId').val('0');
         $('#selProductId').prop('selectedIndex', 0);
         var date = new Date();
@@ -167,6 +173,9 @@
 
     function Save() {
 
+        if (!ValidateForm())
+            return;
+
         $('#addModal').modal('hide');
         var obj = new Object();
         obj.productId = $('#selProductId').find(":selected").val();
@@ -177,14 +186,14 @@
 
         //alert(JSON.stringify(obj));
         id = $('#txtAgreementId').val();
-        if (id == '0'){
+        if (id == '0') {
             // send create agreeement request
             $.ajax({
                 contentType: 'application/json',
                 data: JSON.stringify(obj),
                 dataType: 'json',
                 success: function (data) {
-                
+
                     ShowAlert($("#success-alert"), "Agreement successfully saved.");
                     table.ajax.reload();
                 },
@@ -205,7 +214,7 @@
                 data: JSON.stringify(obj),
                 dataType: 'json',
                 success: function (data) {
-                
+
                     ShowAlert($("#success-alert"), "Agreement successfully saved.");
                     table.ajax.reload();
                 },
@@ -220,11 +229,36 @@
         }
     }
 
+    function ValidateForm() {
+        var valid = true;
+        if ($("#txtNewPrice").val() == '') {
+            $("#spanPriceRequired").show();
+            valid = false;
+        }
+
+        if ($('#selProductId').prop('selectedIndex') == 0) {
+            $("#spanProductRequired").show();
+            valid = false;
+        }
+
+        return valid;
+    }
+
     $(document).ready(function () {
 
         $("#success-alert").hide();
         $("#danger-alert").hide();
-       
+
+        $("#txtNewPrice").change(function () {
+            if ($(this).val() != '')
+                $("#spanPriceRequired").hide();
+        });
+
+        $("#selProductId").change(function () {
+            if ($(this).prop('selectedIndex') != 0)
+                $("#spanProductRequired").hide();
+        });
+
         $('#addModal').modal({
             focus: true,
             show: false
@@ -245,10 +279,28 @@
             },
             columns: [
                 { data: "userName" },
-                { data: "groupCode" },
-                { data: "productNumber" },
-                { data: "effectiveDate" },
-                { data: "expirationDate" },
+                { 
+                    data: "groupCode", render: function (data, type, row, meta) {
+                        return "<div data-toggle='tooltip' data-placement='top' title='" +row.groupDescription + "'>" 
+                        + data + "</div>";
+                    } 
+                },
+                { 
+                    data: "productNumber", render: function (data, type, row, meta) {
+                        return "<div data-toggle='tooltip' data-placement='top' title='" +row.productDescription + "'>" 
+                        + data + "</div>";
+                    }
+                },
+                {
+                    data: "effectiveDate", render: function (data, type, row, meta) {
+                        return FormatDate(GetLocalDateString(data));
+                    }
+                },
+                { 
+                    data: "expirationDate", render: function (data, type, row, meta) {
+                        return FormatDate(GetLocalDateString(data));
+                    } 
+                },
                 { data: "productPrice" },
                 { data: "newPrice" },
                 { data: "active" },
@@ -260,6 +312,8 @@
                 }
             ]
         });
+
+        $('[data-toggle="tooltip"]').tooltip();
 
         let dropdown = $('#selProductId');
         dropdown.empty();
