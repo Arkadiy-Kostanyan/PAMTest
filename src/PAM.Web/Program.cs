@@ -69,14 +69,15 @@ var app = builder.Build();
 // add performace check middleware
 app.UsePerformanceCheck();
 
+// add custom global exception handler
+app.UseGlobalExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseShowAllServicesMiddleware();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 app.UseRouting();
