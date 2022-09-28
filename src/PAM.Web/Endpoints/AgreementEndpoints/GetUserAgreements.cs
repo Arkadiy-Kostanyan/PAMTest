@@ -18,17 +18,11 @@ public class GetUserAgreements : EndpointBaseAsync
         .WithoutRequest
         .WithActionResult<AgreementResponse>
 {
-  private readonly IReadRepository<Agreement> _repository;
-  private readonly ICurrentUserService _currentUserService;
-  private readonly UserManager<IdentityUser> _userManager;
+
   private readonly IAgreementsSearchService _searchService;
 
-  public GetUserAgreements(IReadRepository<Agreement> repository, ICurrentUserService currentUserService, UserManager<IdentityUser> userManager,
-    IAgreementsSearchService searchService)
+  public GetUserAgreements(IAgreementsSearchService searchService)
   {
-    _repository = repository;
-    _currentUserService = currentUserService;
-    _userManager = userManager;
     _searchService = searchService;
   }
 
@@ -44,14 +38,6 @@ public class GetUserAgreements : EndpointBaseAsync
   {
 
     var response = new AgreementResponse();
-
-    /*  
-    response.Agreements = (await _repository.ListAsync(new AllAgreementsWithProductAndGroupSpec()))
-        .Select(agreement => new AgreementRecord(agreement.Id, _userManager.Users.FirstOrDefault(u => u.Id == agreement.UserId)?.UserName, agreement.Product.ProductGroup.GroupCode, 
-        agreement.Product.ProductNumber, agreement.EffectiveDate, agreement.ExpirationDate, 
-        agreement.ProductPrice, agreement.NewPrice, agreement.Active, agreement.Product.Description, agreement.Product.ProductGroup.Description))
-        .ToList();
-    */
 
     response.Agreements = await _searchService.GetAllAgreements();
     return Ok(response);
