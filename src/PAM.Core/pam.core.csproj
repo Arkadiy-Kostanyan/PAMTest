@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="AgreementAggregate\Events\" />
     <Folder Include="AgreementAggregate\Handlers\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

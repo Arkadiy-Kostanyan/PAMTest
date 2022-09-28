@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PAM.Core.AgreementAggregate;
 using PAM.Core.AgreementAggregate.Specifications;
 using PAM.Core.Interfaces;
+using PAM.Core.Services;
 using PAM.SharedKernel.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;

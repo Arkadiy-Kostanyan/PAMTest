@@ -23,8 +23,6 @@ public static class ConfigureServices
 
     services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
     services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
-    services.AddScoped(typeof(IMediator), typeof(Mediator));
-    services.AddScoped(typeof(IDomainEventDispatcher), typeof(DomainEventDispatcher));
 
     return services;
   }
